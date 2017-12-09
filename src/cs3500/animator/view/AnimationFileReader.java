@@ -36,10 +36,15 @@ public class AnimationFileReader {
 
     sc = new Scanner(new FileInputStream(fileName));
 
+    int currLayer = 0;
+
     while (sc.hasNext()) {
       String command = sc.next();
       ShapeInfo shapeInfo;
       switch (command) {
+        case "layer":
+          currLayer = Integer.parseInt(sc.next()) - 1;
+          break;
         case "background":
           builder.setBackColor(sc.nextFloat(), sc.nextFloat(), sc.nextFloat());
           break;
@@ -50,7 +55,7 @@ public class AnimationFileReader {
                   rinfo.getX(), rinfo.getY(),
                   rinfo.getWidth(), rinfo.getHeight(),
                   rinfo.getR(), rinfo.getG(), rinfo.getB(),
-                  rinfo.getStart(), rinfo.getEnd());
+                  rinfo.getStart(), rinfo.getEnd(), currLayer);
           break;
         case "oval":
           OvalInfo cinfo = readOvalInfo(sc);
@@ -59,7 +64,7 @@ public class AnimationFileReader {
                   cinfo.getX(), cinfo.getY(),
                   cinfo.getXRadius(), cinfo.getYRadius(),
                   cinfo.getR(), cinfo.getG(), cinfo.getB(),
-                  cinfo.getStart(), cinfo.getEnd());
+                  cinfo.getStart(), cinfo.getEnd(), currLayer);
           break;
         case "move":
           MoveInfo minfo = readMoveInfo(sc);

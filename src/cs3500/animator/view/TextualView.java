@@ -33,7 +33,7 @@ public class TextualView implements IAnimationView {
    * Displays an animation as a text description.
    */
   public void display() {
-    ArrayList<IShape> shapes = model.getShapes();
+    ArrayList<ArrayList<IShape>> shapes = model.getShapes();
     ArrayList<IAction> actions = model.getActions();
     String s = "";
     s += "Shapes:\n";
@@ -41,17 +41,22 @@ public class TextualView implements IAnimationView {
       if (i != 0) {
         s += "\n";
       }
-      IShape curr = shapes.get(i);
-      s += "Name: " + curr.getName() + "\n";
-      s += "Type: " + curr.getType().toString().toLowerCase() + "\n";
-      s += curr.getPosLocation() + ": " + "(" + (double) curr.getX()
-              + "," + (double) curr.getY() + ")" + ", ";
-      String[] wl = curr.getWLTypes();
-      s += wl[0] + ": " + (double) curr.getWidth() + ", "
-              + wl[1] + ": " + (double) curr.getHeight() + ", ";
-      s += "Color: " + curr.getColor() + "\n";
-      s += "Appears at t=" + curr.getAppear() / speed + "s\n";
-      s += "Disappears at t=" + curr.getDisappear() / speed + "s\n";
+      if (shapes.size() > 1) {
+        s += "Layer " + (i + 1) + ":";
+      }
+      for (int j = 0; j < shapes.get(i).size(); j++) {
+        IShape curr = shapes.get(i).get(j);
+        s += "Name: " + curr.getName() + "\n";
+        s += "Type: " + curr.getType().toString().toLowerCase() + "\n";
+        s += curr.getPosLocation() + ": " + "(" + (double) curr.getX()
+                + "," + (double) curr.getY() + ")" + ", ";
+        String[] wl = curr.getWLTypes();
+        s += wl[0] + ": " + (double) curr.getWidth() + ", "
+                + wl[1] + ": " + (double) curr.getHeight() + ", ";
+        s += "Color: " + curr.getColor() + "\n";
+        s += "Appears at t=" + curr.getAppear() / speed + "s\n";
+        s += "Disappears at t=" + curr.getDisappear() / speed + "s\n";
+      }
     }
 
     for (int i = 0; i < actions.size(); i++) {

@@ -16,7 +16,7 @@ import cs3500.animator.view.TweenModelBuilder;
  */
 public class AnimatorModel implements IAnimatorOperations {
 
-  private ArrayList<IShape> shapes;
+  private ArrayList<ArrayList<IShape>> shapes;
   private ArrayList<IAction> actions;
   private MyColor backgroundColor;
 
@@ -25,13 +25,17 @@ public class AnimatorModel implements IAnimatorOperations {
    */
   public AnimatorModel() {
     shapes = new ArrayList<>();
+    shapes.add(new ArrayList<>());
     actions = new ArrayList<>();
     backgroundColor = new MyColor(1.0f, 1.0f, 1.0f);
   }
 
   @Override
   public void createShape(ShapeType st, String name, Posn location, Posn dimensions, int sides,
-                          MyColor color, Posn lifetime) {
+                          MyColor color, Posn lifetime, int layer) {
+    if (layer > shapes.size() - 1) {
+      shapes.add(new ArrayList<>());
+    }
     IShape s;
     if (st == ShapeType.OVAL) {
       s = new MyOval(name, location, dimensions, color, lifetime);
@@ -39,7 +43,7 @@ public class AnimatorModel implements IAnimatorOperations {
     else {
       s = new MyRectangle(name, location, dimensions, color, lifetime);
     }
-    shapes.add(s);
+    shapes.get(layer).add(s);
   }
 
   @Override
@@ -73,9 +77,11 @@ public class AnimatorModel implements IAnimatorOperations {
    * @return      The desired shape
    */
   private IShape getShapeWithName(String name) {
-    for (IShape s : shapes) {
-      if (s.getName().equals(name)) {
-        return s;
+    for (ArrayList<IShape> al : shapes) {
+      for (IShape s : al) {
+        if (s.getName().equals(name)) {
+          return s;
+        }
       }
     }
     throw new IllegalArgumentException("No shape found with that name.");
@@ -97,17 +103,22 @@ public class AnimatorModel implements IAnimatorOperations {
       if (i != 0) {
         s += "\n";
       }
-      IShape curr = shapes.get(i);
-      s += "Name: " + curr.getName() + "\n";
-      s += "Type: " + curr.getType().toString().toLowerCase() + "\n";
-      s += curr.getPosLocation() + ": " + "(" + curr.getX()
-              + "," + curr.getY() + ")" + ", ";
-      String[] wl = curr.getWLTypes();
-      s += wl[0] + ": " + curr.getWidth() + ", "
-              + wl[1] + ": " + curr.getHeight() + ", ";
-      s += "Color: " + curr.getColor() + "\n";
-      s += "Appears at t=" + curr.getAppear() + "\n";
-      s += "Disappears at t=" + curr.getDisappear() + "\n";
+      if (shapes.size() > 1) {
+        s += "Layer " + (i + 1) + ":";
+      }
+      for (int j = 0; j < shapes.get(i).size(); j++) {
+        IShape curr = shapes.get(i).get(j);
+        s += "Name: " + curr.getName() + "\n";
+        s += "Type: " + curr.getType().toString().toLowerCase() + "\n";
+        s += curr.getPosLocation() + ": " + "(" + curr.getX()
+                + "," + curr.getY() + ")" + ", ";
+        String[] wl = curr.getWLTypes();
+        s += wl[0] + ": " + curr.getWidth() + ", "
+                + wl[1] + ": " + curr.getHeight() + ", ";
+        s += "Color: " + curr.getColor() + "\n";
+        s += "Appears at t=" + curr.getAppear() + "\n";
+        s += "Disappears at t=" + curr.getDisappear() + "\n";
+      }
     }
 
     for (int i = 0; i < actions.size(); i++) {
@@ -122,7 +133,7 @@ public class AnimatorModel implements IAnimatorOperations {
   }
 
   @Override
-  public ArrayList<IShape> getShapes() {
+  public ArrayList<ArrayList<IShape>> getShapes() {
     return this.shapes;
   }
 
@@ -134,10 +145,12 @@ public class AnimatorModel implements IAnimatorOperations {
   @Override
   public double getEndTime() {
     double result = 0;
-    for (IShape s : shapes) {
-      double t = s.getDisappear();
-      if (t > result) {
-        result = t;
+    for (ArrayList<IShape> al : shapes) {
+      for (IShape s : al) {
+        double t = s.getDisappear();
+        if (t > result) {
+          result = t;
+        }
       }
     }
     return result;
@@ -151,6 +164,18 @@ public class AnimatorModel implements IAnimatorOperations {
   @Override
   public MyColor getBackColor() {
     return backgroundColor;
+  }
+
+  @Override
+  public int getNumShapes() {
+    int n = 0;
+    for (int i = 0; i < shapes.size(); i++) {
+      for (int j = 0; j < shapes.get(i).size(); j++) {
+        n++;
+      }
+    }
+
+    return n;
   }
 
   @Override
@@ -170,10 +195,10 @@ public class AnimatorModel implements IAnimatorOperations {
     public TweenModelBuilder<IAnimatorOperations> addOval(String name, float cx, float cy,
                                                           float xRadius, float yRadius, float red,
                                                           float green, float blue, int startOfLife,
-                                                          int endOfLife) {
+                                                          int endOfLife, int layer) {
       am.createShape(ShapeType.OVAL, name, new Posn(cx, cy), new Posn(xRadius, yRadius), 4,
               new MyColor(red, green, blue),
-              new Posn(startOfLife, endOfLife));
+              new Posn(startOfLife, endOfLife), layer);
       return this;
     }
 
@@ -181,10 +206,10 @@ public class AnimatorModel implements IAnimatorOperations {
     public TweenModelBuilder<IAnimatorOperations> addRectangle(String name, float lx, float ly,
                                                                float width, float height, float red,
                                                                float green, float blue,
-                                                               int startOfLife, int endOfLife) {
+                                                               int startOfLife, int endOfLife, int layer) {
       am.createShape(ShapeType.RECTANGLE, name, new Posn(lx, ly), new Posn(width, height), 4,
               new MyColor(red, green, blue),
-              new Posn(startOfLife, endOfLife));
+              new Posn(startOfLife, endOfLife), layer);
       return this;
     }
 
@@ -224,21 +249,6 @@ public class AnimatorModel implements IAnimatorOperations {
     public IAnimatorOperations build() {
       return am;
     }
-  }
-
-  /**
-   * Gets the shape with the given name.
-   *
-   * @param name  The name of the desired shape
-   * @return      The desired shape
-   */
-  private IShape getShape(String name) {
-    for (IShape s : shapes) {
-      if (s.getName().equals(name)) {
-        return s;
-      }
-    }
-    throw new IllegalArgumentException("No shape found with that name.");
   }
 
   /**

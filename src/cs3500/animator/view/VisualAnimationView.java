@@ -43,11 +43,11 @@ public class VisualAnimationView extends JFrame implements IAnimationView, Actio
     this.setSize(FRAME_WIDTH, FRAME_HEIGHT);
     this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-    this.setLayout(new BorderLayout());
-    JPanel animationPanel = new AnimationPanel(this.model.getShapes());
-    animationPanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
-    JScrollPane scrollPane = new JScrollPane(animationPanel);
-    this.add(scrollPane, BorderLayout.CENTER);
+    //this.setLayout(new BorderLayout());
+    //JPanel animationPanel = new AnimationPanel(this.model.getShapes());
+    //animationPanel.setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+    //JScrollPane scrollPane = new JScrollPane(animationPanel);
+    //this.add(scrollPane, BorderLayout.CENTER);
 
     int delay = 1000 / speed;
     timer = new Timer(delay, this);

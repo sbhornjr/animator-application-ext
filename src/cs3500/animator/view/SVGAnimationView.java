@@ -32,31 +32,31 @@ public class SVGAnimationView implements IAnimationView {
    * Displays an animation an formatted SVG text.
    */
   public void display() {
-    ArrayList<IShape> shapes = model.getShapes();
+    ArrayList<ArrayList<IShape>> shapes = model.getShapes();
     String s = "";
 
     s += "<svg width=\"" + SVG_WIDTH + "\" height=\"" + SVG_HEIGHT
             + "\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n\n";
-
-    for (IShape sh : shapes) {
-      if (sh.getType() == ShapeType.RECTANGLE) {
-        s += "<rect id=\"" + sh.getName() + "\" x=\"" + sh.getX() + "\" y=\"" + sh.getY()
-                + "\" width=\"" + sh.getWidth() + "\" height=\"" + sh.getHeight()
-                + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
-        s += this.actionsAsString(sh);
-        s += "</rect>\n\n";
-      }
-      else {
-        s += "<ellipse id=\"" + sh.getName() + "\" cx=\"" + sh.getX() + "\" cy=\"" + sh.getY()
-                + "\" rx=\"" + sh.getWidth() + "\" ry=\"" + sh.getHeight()
-                + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
-        String act = this.actionsAsString(sh);
-        act = act.replace("\"x\"", "\"cx\"");
-        act = act.replace("\"y\"", "\"cy\"");
-        act = act.replace("\"width\"", "\"rx\"");
-        act = act.replace("\"height\"", "\"ry\"");
-        s += act;
-        s += "</ellipse>\n\n";
+    for (ArrayList<IShape> al : shapes) {
+      for (IShape sh : al) {
+        if (sh.getType() == ShapeType.RECTANGLE) {
+          s += "<rect id=\"" + sh.getName() + "\" x=\"" + sh.getX() + "\" y=\"" + sh.getY()
+                  + "\" width=\"" + sh.getWidth() + "\" height=\"" + sh.getHeight()
+                  + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
+          s += this.actionsAsString(sh);
+          s += "</rect>\n\n";
+        } else {
+          s += "<ellipse id=\"" + sh.getName() + "\" cx=\"" + sh.getX() + "\" cy=\"" + sh.getY()
+                  + "\" rx=\"" + sh.getWidth() + "\" ry=\"" + sh.getHeight()
+                  + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
+          String act = this.actionsAsString(sh);
+          act = act.replace("\"x\"", "\"cx\"");
+          act = act.replace("\"y\"", "\"cy\"");
+          act = act.replace("\"width\"", "\"rx\"");
+          act = act.replace("\"height\"", "\"ry\"");
+          s += act;
+          s += "</ellipse>\n\n";
+        }
       }
     }
     s += "</svg>";

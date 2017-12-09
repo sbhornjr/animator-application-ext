@@ -25,9 +25,10 @@ public interface IAnimatorOperations {
    * @param sides       The amount of sides that the shape has
    * @param color       The color of the shape
    * @param lifetime    The times that the shape appears and disappears
+   * @param layer       The layer of the animation that the given shape should be a part of.
    */
   void createShape(ShapeType st, String name, Posn location, Posn dimensions, int sides,
-                          MyColor color, Posn lifetime);
+                          MyColor color, Posn lifetime, int layer);
 
   /**
    * Creates a new action and adds it to the model.
@@ -61,7 +62,7 @@ public interface IAnimatorOperations {
    *
    * @return  An ArrayList of the shapes
    */
-  ArrayList<IShape> getShapes();
+  ArrayList<ArrayList<IShape>> getShapes();
 
   /**
    * Returns the actions in this model.
@@ -86,9 +87,17 @@ public interface IAnimatorOperations {
 
   /**
    * Returns the animation's initial background color.
-   * @return
+   *
+   * @return  The background color.
    */
   MyColor getBackColor();
+
+  /**
+   * Gets the total number of shapes in this model.
+   *
+   * @return  The model's number of shapes.
+   */
+  int getNumShapes();
 
   /**
    * Constructs a builder for configuring and then creating an Animation model

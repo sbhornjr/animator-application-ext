@@ -124,7 +124,15 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
     dropDownPanel.setLayout(new FlowLayout());
     this.add(dropDownPanel, BorderLayout.EAST);
 
-    IShape[] shapeArray = this.model.getShapes().toArray(new IShape[this.model.getShapes().size()]);
+    IShape[] shapeArray = new IShape[this.model.getNumShapes()];
+    int n = 0;
+    for (int i = 0; i < this.model.getShapes().size(); i++) {
+      for (int j = 0; j < this.model.getShapes().get(i).size(); j++) {
+        shapeArray[n] = this.model.getShapes().get(i).get(j);
+        n++;
+      }
+    }
+
     shapeRemover = new JComboBox<>(shapeArray);
     shapeRemover.setEditable(true);
     shapeRemover.setActionCommand("SHAPE REMOVED");
@@ -182,15 +190,17 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
    * Returns each shape in the model to their initial location, position, and color values.
    */
   private void initShapes() {
-    for (IShape s : model.getShapes()) {
-      IShape sh = s;
-      sh.setDefault();
+    for (int i = 0; i < model.getShapes().size(); i++) {
+      for (IShape s : model.getShapes().get(i)) {
+        IShape sh = s;
+        sh.setDefault();
+      }
     }
   }
 
   @Override
   public void display() {
-    ArrayList<IShape> shapes = model.getShapes();
+    ArrayList<ArrayList<IShape>> shapes = model.getShapes();
     String s = "";
 
     s += "<svg width=\"" + FRAME_WIDTH + "\" height=\"" + FRAME_HEIGHT
@@ -201,31 +211,31 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
             + "\" visibility=\"visible\" >\n";
     s += "</rect>\n\n";
 
-    for (IShape sh : shapes) {
-      if (sh.getType() == ShapeType.RECTANGLE) {
-        s += "<rect id=\"" + sh.getName() + "\" x=\"" + sh.getX() + "\" y=\"" + sh.getY()
-                + "\" width=\"" + sh.getWidth() + "\" height=\"" + sh.getHeight()
-                + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"";
-        if (sh.isVisible()) {
-          s += "visible\" >\n";
+    for (ArrayList<IShape> al : shapes) {
+      for (IShape sh : al) {
+        if (sh.getType() == ShapeType.RECTANGLE) {
+          s += "<rect id=\"" + sh.getName() + "\" x=\"" + sh.getX() + "\" y=\"" + sh.getY()
+                  + "\" width=\"" + sh.getWidth() + "\" height=\"" + sh.getHeight()
+                  + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"";
+          if (sh.isVisible()) {
+            s += "visible\" >\n";
+          } else {
+            s += "hidden\" >\n";
+          }
+          s += this.actionsAsString(sh);
+          s += "</rect>\n\n";
+        } else {
+          s += "<ellipse id=\"" + sh.getName() + "\" cx=\"" + sh.getX() + "\" cy=\"" + sh.getY()
+                  + "\" rx=\"" + sh.getWidth() + "\" ry=\"" + sh.getHeight()
+                  + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
+          String act = this.actionsAsString(sh);
+          act = act.replace("\"x\"", "\"cx\"");
+          act = act.replace("\"y\"", "\"cy\"");
+          act = act.replace("\"width\"", "\"rx\"");
+          act = act.replace("\"height\"", "\"ry\"");
+          s += act;
+          s += "</ellipse>\n\n";
         }
-        else {
-          s += "hidden\" >\n";
-        }
-        s += this.actionsAsString(sh);
-        s += "</rect>\n\n";
-      }
-      else {
-        s += "<ellipse id=\"" + sh.getName() + "\" cx=\"" + sh.getX() + "\" cy=\"" + sh.getY()
-                + "\" rx=\"" + sh.getWidth() + "\" ry=\"" + sh.getHeight()
-                + "\" fill=\"rgb" + sh.getColorAsInt() + "\" visibility=\"visible\" >\n";
-        String act = this.actionsAsString(sh);
-        act = act.replace("\"x\"", "\"cx\"");
-        act = act.replace("\"y\"", "\"cy\"");
-        act = act.replace("\"width\"", "\"rx\"");
-        act = act.replace("\"height\"", "\"ry\"");
-        s += act;
-        s += "</ellipse>\n\n";
       }
     }
     s += "</svg>";
@@ -374,14 +384,17 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
       g.setColor(background.getColor());
       g.fillRect(background.getX(), background.getY(), background.getWidth(), background.getHeight());
 
-      for (IShape s : model.getShapes()) {
-        if (s.isVisible()) {
-          if (s.getType() == ShapeType.RECTANGLE) {
-            g.setColor(s.getColor());
-            g.fillRect(s.getX(), s.getY(), s.getWidth(), s.getHeight());
-          } else {
-            g.setColor(s.getColor());
-            g.fillOval(s.getX(), s.getY(), s.getWidth(), s.getHeight());
+      for (int i = model.getShapes().size() - 1; i >= 0; i--) {
+        for (IShape s : model.getShapes().get(i)) {
+          System.out.println(s);
+          if (s.isVisible()) {
+            if (s.getType() == ShapeType.RECTANGLE) {
+              g.setColor(s.getColor());
+              g.fillRect(s.getX(), s.getY(), s.getWidth(), s.getHeight());
+            } else {
+              g.setColor(s.getColor());
+              g.fillOval(s.getX(), s.getY(), s.getWidth(), s.getHeight());
+            }
           }
         }
       }

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class ReadOnlyAnimatorModel implements IAnimatorOperations {
   private IAnimatorOperations model;
   private ArrayList<IAction> actions;
-  private ArrayList<IShape> shapes;
+  private ArrayList<ArrayList<IShape>> shapes;
 
   /**
    * Constructs a ReadOnlyAnimatorModel from a given AnimatorModel.
@@ -32,21 +32,26 @@ public class ReadOnlyAnimatorModel implements IAnimatorOperations {
     this.actions = model.getActions();
     this.shapes = new ArrayList<>();
 
-    ArrayList<IShape> oldShapes = model.getShapes();
+    ArrayList<ArrayList<IShape>> oldShapes = model.getShapes();
 
-    for (IShape sh : oldShapes) {
-      if (sh instanceof MyRectangle) {
-        this.shapes.add(new ReadOnlyRectangle(sh));
-      }
-      else if (sh instanceof MyOval) {
-        this.shapes.add(new ReadOnlyOval(sh));
+    for (int q = 0; q < oldShapes.size(); q++) {
+      this.shapes.add(new ArrayList<>());
+    }
+
+    for (int i = 0; i < oldShapes.size(); i++) {
+      for (IShape sh : oldShapes.get(i)) {
+        if (sh instanceof MyRectangle) {
+          this.shapes.get(i).add(new ReadOnlyRectangle(sh));
+        } else if (sh instanceof MyOval) {
+          this.shapes.get(i).add(new ReadOnlyOval(sh));
+        }
       }
     }
   }
 
   @Override
   public void createShape(ShapeType st, String name, Posn location, Posn dimensions, int sides,
-                          MyColor color, Posn lifetime) {
+                          MyColor color, Posn lifetime, int layer) {
     throw new UnsupportedOperationException("You can't mutate the read-only model.");
   }
 
@@ -70,7 +75,7 @@ public class ReadOnlyAnimatorModel implements IAnimatorOperations {
   }
 
   @Override
-  public ArrayList<IShape> getShapes() {
+  public ArrayList<ArrayList<IShape>> getShapes() {
     return this.shapes;
   }
 
@@ -92,6 +97,11 @@ public class ReadOnlyAnimatorModel implements IAnimatorOperations {
   @Override
   public MyColor getBackColor() {
     return model.getBackColor();
+  }
+
+  @Override
+  public int getNumShapes() {
+    return model.getNumShapes();
   }
 
   @Override
