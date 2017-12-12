@@ -1,0 +1,16 @@
+layer 1
+rectangle name r1 lower-left-x 100 lower-left-y 100 width 50 height 50 color 1 0 0 from 1 to 100
+oval name c1 center-x 300 center-y 300 x-radius 25 y-radius 25 color 0 0 1 from 1 to 100
+rectangle name r3 lower-left-x 500 lower-left-y 0 width 50 height 50 color 1 0 0 from 1 to 100
+layer 2
+rectangle name r2 lower-left-x 525 lower-left-y 525 width 50 height 50 color 0 1 0 from 1 to 100
+oval name c2 center-x 175 center-y 175 x-radius 25 y-radius 25 color 1 0 1 from 1 to 100
+rectangle name r4 lower-left-x 500 lower-left-y 100 width 50 height 50 color 0 1 0 from 1 to 100
+layer 3
+rectangle name r5 lower-left-x 500 lower-left-y 200 width 50 height 50 color 0 0 1 from 1 to 100
+oval name c3 center-x 500 center-y 300 x-radius 25 y-radius 25 color 0 0 0 from 1 to 100
+move name r1 moveto 100 100 500 500 from 1 to 100
+move name c2 moveto 175 175 325 325 from 1 to 100
+move name r3 moveto 500 0   500 200 from 1 to 100
+move name r5 moveto 500 200 500 0   from 1 to 100
+move name c3 moveto 500 300 300 300 from 1 to 100

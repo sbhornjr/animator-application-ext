@@ -5,6 +5,7 @@ import cs3500.animator.model.misc.MyColor;
 import cs3500.animator.model.misc.Posn;
 import cs3500.animator.model.model.IAnimatorOperations;
 import cs3500.animator.model.shapes.IShape;
+import cs3500.animator.model.shapes.Layer;
 import cs3500.animator.model.shapes.MyRectangle;
 import cs3500.animator.model.shapes.ShapeType;
 
@@ -124,9 +125,22 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
     dropDownPanel.setLayout(new FlowLayout());
     this.add(dropDownPanel, BorderLayout.EAST);
 
-    IShape[] shapeArray = new IShape[this.model.getNumShapes()];
+    IShape[] shapeArray;
+
+    if (model.getShapes().size() == 1) {
+      shapeArray = new IShape[this.model.getNumShapes()];
+    }
+    else {
+      shapeArray = new IShape[this.model.getNumShapes() + model.getShapes().size()];
+    }
+
     int n = 0;
     for (int i = 0; i < this.model.getShapes().size(); i++) {
+      if (this.model.getShapes().size() > 1) {
+        shapeArray[n] = new Layer(Integer.toString(i + 1), new Posn(0, 0),
+                new Posn(0, 0), new MyColor(0, 0, 0), new Posn(0, model.getEndTime()));
+        n++;
+      }
       for (int j = 0; j < this.model.getShapes().get(i).size(); j++) {
         shapeArray[n] = this.model.getShapes().get(i).get(j);
         n++;
@@ -386,7 +400,6 @@ public class InteractiveView extends JFrame implements IAnimationView, IInteract
 
       for (int i = model.getShapes().size() - 1; i >= 0; i--) {
         for (IShape s : model.getShapes().get(i)) {
-          System.out.println(s);
           if (s.isVisible()) {
             if (s.getType() == ShapeType.RECTANGLE) {
               g.setColor(s.getColor());
